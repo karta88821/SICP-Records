@@ -133,3 +133,75 @@ conpound predicates
 (or⟨e1⟩ ... ⟨en⟩)
 (not ⟨e⟩)
 ```
+
+### Example: Square Roots by Newton's Method
+
+Definiation
+
+```Lisp
+√x = the y such that y ≥ 0 and y^2 = x.
+
+(define (sqrt x)
+(the y (and (>= y 0)
+              (= (square y) x))))
+```
+
+Newton's method of successive approximations
+
+Whenever we have a guess y for the value of the square root off a number x, we can perform a simple manipulation to get a better guess(one closer to the actual square root) by averaging y with x/y. For example, we cam compute the square root of 2 as follows. Suppose our initial guess is 1:
+
+```none
+Guess           Quotient            Average
+1               (2/1) = 2           ((2 + 1)/2) = 1.5
+1.5             (2/1.5) = 1.3333    ((1.3333 + 1.5)/2) = 1.4167
+1.4167          (2/1.4167) = 1.4118 ((1.4167 + 1.4118)/2) = 1.4142
+1.4142          ...                 ...
+```
+
+If the guess is good enough for our purposes, we are done; if not, we must repeat the process with an improved guess.
+
+```Lisp
+(define (sqrt-iter guess x)
+    if (good-enough? guess x)
+        guess
+        (sqrt-iter (improve guess x) x))
+```
+
+A guess is improved by averaging it with the quotient of the radicand and the old guess
+
+```Lisp
+(define (improve guess x)
+    (average guess (/ x guess)))
+    
+(define (average x y)
+    (/ (+ x y) 2))
+```
+
+Improve the answer until it's close enough
+
+```Lisp
+(define (good-enough? guess x)
+(< (abs (- (square guess) x)) 0.001))
+```
+
+Finally, we need a way to get started. For instance, we can always guess that the suqare root of any number 1
+
+```Lisp
+(define (sqrt x)
+(sqrt-iter 1.0 x))
+```
+If we type these definitions to the interpreter, we can use sqrt just as we can use procedure:
+
+```Lisp
+(sqrt 9) 
+3.00009155413138
+
+(sqrt (+ 100 37)) 
+11.704699917758145
+
+(sqrt (+ (sqrt 2) (sqrt 3))) 
+1.7739279023207892
+
+(square (sqrt 1000)) 
+1000.000369924366
+```
